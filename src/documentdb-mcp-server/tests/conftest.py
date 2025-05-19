@@ -33,7 +33,7 @@ if impl_dir not in sys.path:
 class MockCollection:
     """Mock implementation of a DocumentDB collection."""
 
-    def __init__(self, name: str, mock_data: List[Dict[str, Any]] = None):
+    def __init__(self, name: str, mock_data: Optional[List[Dict[str, Any]]] = None):
         """Initialize a mock collection.
 
         Args:
@@ -260,12 +260,13 @@ class MockCollection:
             modified_count = 1
         elif upsert:
             # Create a new document
-            new_doc = {'_id': ObjectId()}
+            new_doc = {}
 
             # Apply filter fields to new document
             for field, value in filter.items():
                 if not field.startswith('$') and isinstance(value, (str, int, float, bool)):
                     new_doc[field] = value
+            new_doc['_id'] = ObjectId()
 
             # Apply updates
             if '$set' in update:
@@ -316,12 +317,13 @@ class MockCollection:
 
         if not filtered_docs and upsert:
             # Create a new document
-            new_doc = {'_id': ObjectId()}
+            new_doc = {}
 
             # Apply filter fields to new document
             for field, value in filter.items():
                 if not field.startswith('$') and isinstance(value, (str, int, float, bool)):
                     new_doc[field] = value
+            new_doc['_id'] = ObjectId()
 
             # Apply updates
             if '$set' in update:
@@ -374,7 +376,7 @@ class MockCollection:
             MagicMock: A mock DeleteResult
         """
         # Find documents to delete
-        docs_to_delete = self._apply_filter(filter or {})
+        docs_to_delete: List[Dict[str, Any]] = self._apply_filter(filter or {})
 
         # Remove all matching documents
         deleted_count = 0
