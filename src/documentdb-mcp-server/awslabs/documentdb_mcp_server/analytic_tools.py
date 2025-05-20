@@ -180,7 +180,8 @@ def get_field_type(docs, path):
                     types.add('array')
                 else:
                     types.add(value_type)
-        except Exception:
+        except (ValueError, IndexError, KeyError, TypeError, AttributeError) as e:
+            logger.warning(f'Error processing document: {doc}. Error: {e}')
             continue
 
     if not types:
